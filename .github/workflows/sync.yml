@@ -1,0 +1,24 @@
+name: Sync
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+jobs:
+  repo-sync:
+    env:
+      PAT: ${{ secrets.PAT }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: sync acl4ssr
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/ACL4SSR/ACL4SSR.git"
+          source_branch: "master"
+          destination_branch: "a4s"
+          github_token: ${{ secrets.PAT }}
